@@ -3,7 +3,6 @@ package openai
 import (
 	"context"
 	"fmt"
-	"strings"
 
 	"github.com/sashabaranov/go-openai"
 )
@@ -43,17 +42,7 @@ func (o *OpenAI) GenerateGameTopicAIAnswer(ctx context.Context) (string, string,
 	}
 	topic := topicResp.Choices[0].Message.Content
 
-	//charsToRemoveに含まれる文字をお題(topic)から取り除く（例 「宇宙で一番「困ること」は何？」　→　宇宙で一番困ることは何？）
-	charsToRemove_topic := []string{"「", "」"}
-	for _, char := range charsToRemove_topic {
-		topic = strings.ReplaceAll(topic, char, "")
-	}
-
-	//お題の最初と最後にある「」を取り除く（例 「宇宙で一番「困ること」は何？」　→　宇宙で一番「困ること」は何？）
-	//if strings.HasPrefix(topic, "「") && strings.HasSuffix(topic, "」") {
-	//	topic = strings.TrimPrefix(topic, "「")
-	//	topic = strings.TrimSuffix(topic, "」")
-	//}
+	topic = RemoveChars_topic(topic)
 
 	// ②生成されたお題に対する面白い回答を生成
 	answerPrompt := fmt.Sprintf("お題: %s\nこのお題に対して、面白い回答を一つ30文字以内で考えてください。", topic)
@@ -81,27 +70,14 @@ func (o *OpenAI) GenerateGameTopicAIAnswer(ctx context.Context) (string, string,
 	answer := answerResp.Choices[0].Message.Content
 
 	//不自然な始まりを除去
-	prefixes := []string{"なぜならば、", "なぜならば", "なぜなら、", "なぜなら"}
-	for _, prefix := range prefixes {
-		answer = strings.TrimPrefix(answer, prefix)
-	}
+	answer = RemovePrefixes_answer(answer)
 
 	//charsToRemoveに含まれる文字を回答(answer)から取り除く（例 「宇宙で一番「困ること」は何？」　→　宇宙で一番困ることは何？）
-	charsToRemove_answer := []string{"「", "」", "！", "。", "\""}
-	for _, char := range charsToRemove_answer {
-		answer = strings.ReplaceAll(answer, char, "")
-	}
+	answer = RemoveChars_answer(answer)
+
 	//:よりの文字を削除（例 ニャンニャンカフェ：ねこがバリスタ、ワンちゃんがウェイター　→　ねこがバリスタ、ワンちゃんがウェイター）
 	//:があったらもう一度答えを生成するのでもいいかも
-	if idx := strings.LastIndex(answer, ":"); idx != -1 {
-		answer = answer[idx+1:] // `:`より後ろの文字列を残す
-	}
-
-	//答えの最初と最後にある「」を取り除く
-	//if strings.HasPrefix(answer, "「") && strings.HasSuffix(answer, "」") {
-	//	answer = strings.TrimPrefix(answer, "「")
-	//	answer = strings.TrimSuffix(answer, "」")
-	//}
+	answer = TrimBeforeColon_answer(answer)
 
 	return topic, answer, nil
 }
