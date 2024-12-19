@@ -3,6 +3,7 @@ package openai
 import (
 	"context"
 	"fmt"
+
 	"github.com/sashabaranov/go-openai"
 )
 
@@ -42,7 +43,7 @@ func (o *OpenAI) GenerateGameTopicAIAnswer(ctx context.Context) (string, string,
 	topic := topicResp.Choices[0].Message.Content
 
 	// ②生成されたお題に対する面白い回答を生成
-	answerPrompt := fmt.Sprintf("お題: %s\nこのお題に対して、面白い回答を一つ考えてください。", topic)
+	answerPrompt := fmt.Sprintf("お題: %s\nこのお題に対して、面白い回答を一つ30文字以内で考えてください。", topic)
 
 	answerResp, err := o.client.CreateChatCompletion(ctx, openai.ChatCompletionRequest{
 		Model: openai.GPT3Dot5Turbo,
