@@ -1,4 +1,4 @@
-'use client'
+"use client";
 
 import React, { useState, useEffect } from "react";
 import { Button } from "./components/ui/button";
@@ -15,33 +15,33 @@ export default function Home() {
   const [isGptThinking, setIsGptThinking] = useState(false);
   const [timeLeft, setTimeLeft] = useState(60);
   const [isTimeUp, setIsTimeUp] = useState(false);
-  const [response,setResponse] = useState({
-    "id":0,
-    "passcode":"s"
-  })
+  const [response, setResponse] = useState({
+    id: 0,
+    passcode: "s",
+  });
 
-  const Postkeyword = async()=>{
-    const res = await fetch('http://localhost:8080/game/start',{
-      method:'POST',
-      headers:{
-        'Content-Type':'apllication/json',
+  const Postkeyword = async () => {
+    const res = await fetch("http://localhost:8080/game/start", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
       },
-      body:JSON.stringify({"passcode":keyword})
+      body: JSON.stringify({ passcode: keyword }),
     });
     const responses = res.json();
     console.log(responses);
-  }
+  };
 
-  const PostTheme = async()=>{
-    const res = await fetch('http://localhost:8080/game/start',{
-      method:'POST',
-      headers:{
-        'Content-Type':'apllication/json',
+  const PostTheme = async () => {
+    const res = await fetch("http://localhost:8080/game/start", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
       },
-      body:JSON.stringify({"id":response.id})
+      body: JSON.stringify({ id: response.id }),
     });
-  } 
- 
+  };
+
   const handleStart = () => {
     if (keyword.trim() !== "") {
       // Postkeyword();
@@ -227,4 +227,3 @@ export default function Home() {
     </div>
   );
 }
-
